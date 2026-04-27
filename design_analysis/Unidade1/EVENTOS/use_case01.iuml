@@ -1,0 +1,24 @@
+@startuml
+
+left to right direction 
+
+actor "Organizador" as organizador
+
+rectangle "Sistema de Eventos"{
+    usecase "Cadastrar Atividade" as cad_atividade
+    usecase "Cadastrar Oficina" as cad_oficina
+    usecase "Cadastrar Palestra" as cad_palestra
+    usecase "Definir Numero de Vagas" as def_vagas
+    usecase "Visualizar Lista Participantes" as visualizar_lista
+}
+
+
+organizador -- cad_atividade
+cad_atividade .> def_vagas: <<include>>
+organizador -- visualizar_lista
+
+cad_oficina --|> cad_atividade
+cad_palestra --|> cad_atividade
+
+
+@enduml

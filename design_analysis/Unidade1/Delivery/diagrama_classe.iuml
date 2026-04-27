@@ -1,0 +1,51 @@
+@startuml
+
+left to right direction
+
+class Cliente{
+    -id: int
+    -nome: String 
+    -data_nasc: Date
+    -cpf: String
+    -telefone: String
+}
+
+class Endereco{
+    -id: int
+    -rua: String
+    -numero: int
+    -bairro: String
+}
+
+class Pedido{
+    -id: int
+    -itens: List<ItemPedido>
+    -valor_total: FloralWhite
+    -pagamento: Pagamento
+    -status: String
+}
+
+class ItemPedido{
+    -produto: Produto
+    -quantidade: int
+}
+
+class Pagamento{
+    -status: String
+    -forma: String
+    -taxa: float
+}
+
+class ControlePedido{
+    +cadastrarPedido(cliente: Cliente): PEdido
+    +adicionarItem(pedido: Pedido,item: ItemPEdido): Pedido
+}
+
+Pedido -> Cliente: pertence >
+Cliente -> Endereco: possui >
+Pedido o- ItemPedido
+Pedido --> Pagamento
+
+
+
+@enduml

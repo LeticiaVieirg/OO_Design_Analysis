@@ -1,0 +1,48 @@
+@startuml
+
+left to right direction
+
+actor "Instrutor" as instrutor
+
+rectangle "MCU02 - Instrutor"{
+
+    usecase "Cadastrar Treino" as cad_treino
+    usecase "Atualizar Treino" as atual_treino
+    usecase "Editar Treino" as edit_treino
+    usecase "Atualizar Treino" as atual_treino
+    usecase "Remover Treino" as rem_treino
+    usecase "Buscar Cliente" as buscar_cliente
+
+    usecase "Cadastrar Cliente" as cad_aluno 
+    usecase "Visualizar Perfil Cliente" as visualizar_cliente    
+
+
+    usecase "Cadastrar Plano" as cad_plano
+    usecase "Visualizar Notificação" as visualizar_notif
+ 
+ 
+    usecase "Cadastrar Carga" as cad_carga
+ 
+    usecase "Cadastrar Avaliação Fisica" as cad_af
+    usecase "Atualizar Avaliação Fisica" as atual_af
+
+    usecase "Cadastro de Suplementos" as cad_suplementos
+}
+
+instrutor -- buscar_cliente
+buscar_cliente <..visualizar_cliente: <<extend>>
+visualizar_cliente <.. cad_treino:<<extend>>
+visualizar_cliente <.. atual_treino :<<extend>>
+visualizar_cliente <.. rem_treino: <<extend>>
+
+instrutor -- visualizar_notif 
+instrutor -- visualizar_cliente
+cad_treino ..> cad_carga:<<include>>
+instrutor -- cad_plano
+instrutor -- cad_aluno
+instrutor -- cad_af
+
+instrutor -- cad_suplementos
+
+
+@enduml

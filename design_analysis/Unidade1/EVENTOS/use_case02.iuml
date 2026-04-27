@@ -1,0 +1,25 @@
+@startuml
+
+left to right direction
+
+actor "Participante" as participante
+
+rectangle "Sistema de Eventos"{
+    usecase "Cadastrar Participante" as cad_participante
+    usecase "Inscriver em Evento" as insc_evento
+    usecase "Visualizar Programação" as visualizar_prog
+    usecase "Increver em Atividade" as insc_atividade
+    usecase "Cancelar Inscrição em Atividade" as canc_inscr_ativ
+}
+
+participante -- insc_evento
+insc_evento .> cad_participante: <<include>>
+participante -- visualizar_prog
+insc_atividade .> insc_evento: <<include>>
+visualizar_prog .> canc_inscr_ativ: <<extend>>
+visualizar_prog .> insc_atividade: <<extend>> 
+participante -- insc_atividade
+participante -- canc_inscr_ativ
+insc_atividade .> canc_inscr_ativ: <<extend>>
+
+@enduml

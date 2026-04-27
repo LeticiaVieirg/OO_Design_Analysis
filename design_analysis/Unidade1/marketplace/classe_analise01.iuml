@@ -1,0 +1,32 @@
+@startuml
+
+left to right direction
+
+class Cliente{
+    nome
+    cpf
+    email
+    endereco
+}
+
+class Produto{
+    id
+    nome
+    descricao
+    valor
+}
+
+class Carrinho{
+    valor
+    produtos
+    valor_total
+    adicionarProduto()
+    finalizarCompra()
+    calcularFrete()
+    gerarQRcode()
+}
+
+Cliente -- Carrinho: possui >
+Carrinho -- Produto: possui >
+
+@enduml

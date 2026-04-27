@@ -1,0 +1,58 @@
+@startuml
+
+left to right direction
+
+class Usuario{
+    nome_usuario
+    email_usuario
+    senha_usuario
+    instituicao_usuario
+    data_nascimento_usuario
+    tipo_usuario
+}
+
+class Participante{
+    escolaridade
+}
+
+class Organizador{
+    eventos
+}
+
+class Evento{
+    nome_evento
+    descricao_evento
+    data_inicio
+    data_fim
+}
+
+class Atividade{
+    tipo
+    ministrante
+    horario
+    local
+    vagas
+    certificado
+}
+
+class Palestra{
+    formato_presencial
+    formato_online
+}
+
+class Oficina{
+    material_oficina
+    pre_requisitos
+}
+
+Palestra -|> Atividade
+Oficina -left-|> Atividade
+
+Organizador -left-|> Usuario
+Participante -left-|> Usuario
+
+Evento o-- Atividade: possui>
+Participante "1..*"--"0..*" Atividade: possui> 
+Organizador "1"--"1..*" Evento: gerencia >
+
+@enduml

@@ -1,0 +1,29 @@
+@startuml
+
+left to right direction
+
+actor "Atendente" as atendente
+actor "Gerente" as gerente
+
+rectangle "Administração" {
+    usecase "Gerenciar Produtos" as gerenciar_prod
+    usecase "Gerenciar Estoque" as gerenciar_est
+    usecase "Gerenciar Instrutores" as gerenciar_inst
+    usecase "Gerenciar Atendentes" as gerenciar_atend
+    usecase "Realizar Vendas" as realizar_vendas
+    usecase "Gerenciar Relatorio de Venda" as relatorio_venda
+    usecase "Gerenciar Relatorio de Caixa" as relatorio_caixa
+}
+
+atendente -- gerenciar_prod
+atendente -- gerenciar_est
+atendente -- relatorio_venda
+atendente -- realizar_vendas
+
+gerente -- gerenciar_inst
+gerente -- gerenciar_atend
+gerente -- relatorio_caixa
+
+gerente --|> atendente
+
+@enduml

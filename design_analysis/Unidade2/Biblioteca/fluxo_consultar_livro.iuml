@@ -1,0 +1,40 @@
+@startuml
+hide footbox
+
+actor "Aluno" as aluno
+
+participant "TelaConsulta" as tela_consulta
+participant "TelaResultado" as tela_resultado
+participant "Acervo" as acervo
+participant "BD" as bd
+collections "Livros" as livros
+
+aluno -> tela_consulta: 1:consultarLivro(termo_busca: String): TelaResultado
+activate tela_consulta
+
+tela_consulta -> acervo: 1.1:consultar(termo_busca: String): List
+activate acervo
+
+acervo -> bd: 1.1.1: quey(consulta:String): QueryList
+activate bd
+
+bd --> acervo
+deactivate bd
+
+acervo -> acervo: 1.1.2:criarLista(livros: QueryList)
+activate acervo
+
+acervo -> livros**: <<create>>
+activate livros
+
+deactivate acervo
+
+acervo --> tela_consulta: livros
+deactivate acervo
+
+tela_consulta -> tela_resultado**: <<create>>
+activate tela_resultado
+
+tela_resultado --> aluno
+
+@enduml

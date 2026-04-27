@@ -1,0 +1,27 @@
+@startuml
+
+hide footbox
+
+actor "Aluno" as aluno
+
+participant "TelaConsulta" as tela_consulta
+participant "BD" as bd
+
+participant "Acervo" as acervo
+
+aluno -> tela_consulta: 1:consultarLivro(termo_busca:String): TelaResultado
+activate tela_consulta
+
+tela_consulta --> acervo: 1.1: consultar()
+activate acervo
+
+acervo -> bd: 1.1.1: quey
+activate bd
+
+bd --> acervo
+deactivate bd
+
+acervo --> tela_consulta: lista_livros
+deactivate acervo
+
+@enduml

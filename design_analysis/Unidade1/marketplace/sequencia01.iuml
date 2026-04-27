@@ -1,0 +1,29 @@
+@startuml
+
+hide footbox
+
+actor "Cliente" as cliente
+
+participant Carrinho as carrinho
+participant Pagamento as pagamento
+participant Produto as produto
+participant Cliente as cliente_entidade
+
+cliente -> carrinho: adicionarProduto()
+activate carrinho
+carrinho --> cliente
+
+cliente -> carrinho: listarProdutos()
+carrinho --> cliente
+
+cliente -> carrinho: finalizarCompra
+deactivate carrinho
+
+carrinho -> cliente_entidade: fornecerEndereco()
+
+carrinho -> pagamento: calcularFrete()
+activate pagamento
+deactivate pagamento
+
+
+@enduml

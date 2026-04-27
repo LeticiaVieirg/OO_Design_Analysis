@@ -1,0 +1,85 @@
+@startuml
+
+left to right direction
+
+class Pessoa{
+    nome
+    cpf 
+    email 
+    matricula
+
+}
+
+class Cliente {
+    nome 
+    cpf 
+    email
+    matricula
+    status
+    data_pagamento
+}
+
+class Ficha <<entity>>{
+    peso 
+    altura
+    quadril
+    biceps
+    busto 
+    perna
+    panturilha
+    cintura
+}
+
+class ControleAvaliacao <<control>>{
+    realizarAvaliacao()
+    atualizarFicha()
+}
+
+class Instrutor{
+    horario = "246-MT-1234"
+}
+
+class Treino{
+    lista_exercicios
+    cliente
+    instrutor
+    repeticoes
+    intervalo
+    status
+}
+
+class Exercicio{
+    nome="Supino reto"
+    carga="10kg"
+    serie="4"
+    repeticao="12"
+    descanso="45s"
+}
+
+class Horario{
+    dias
+    hora_entrada
+    hora_saida
+}
+
+class Avaliacao <<boundary>>{
+    campo_peso
+    campo_altura
+    campo_idade
+    cadastrar()
+}
+
+Cliente "1"--"1" Ficha: possui >
+Cliente "1"--"1" Treino: possui >
+Instrutor "1"--"*" Treino: define >
+Treino "1--*"--"*" Exercicio 
+Instrutor "1"--"*" Avaliacao: realiza >
+Avaliacao "1..*"--"1" ControleAvaliacao: usa > 
+ControleAvaliacao "1..*"--"*" Ficha: atualiza >
+
+Pessoa <|-left. Cliente
+Pessoa <|- Instrutor
+
+Instrutor -- Horario:possui >
+
+@enduml

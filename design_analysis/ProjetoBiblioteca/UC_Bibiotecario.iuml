@@ -1,0 +1,64 @@
+@startuml DiagramaBibliotecario
+
+left to right direction
+
+actor "Bibliotecário" as bib
+
+rectangle "Sistema de Biblioteca" {
+  usecase "Cadastrar obras" as cadastrar_obras
+  usecase "Editar obras" as editar_obras
+  usecase "Remover obras" as remover_obras
+
+  usecase "Cadastrar Exemplares" as cadastrar_exemplares
+  usecase "Editar Exemplares" as editar_exemplares
+  usecase "Remover Exemplares" as remover_exemplares
+
+
+  usecase "Associar localização ao exemplar" as associar_localizacao
+  usecase "Cadastrar localização" as cadastrar_localizacao
+  usecase "Visualizar mapa da localização" as visualizar_mapa
+  usecase "Editar Localização" as editar_localizacao
+
+  usecase "Cadastrar Leitor" as cadastrar_leitor
+  usecase "Editar Leitor" as editar_leitor
+  usecase "Bloquar/Desbloquear Leitor" as bloquear_leitor
+
+  usecase "Realizar Emprestimo" as realizar_emprestimo
+  usecase "Registrar Devolução" as registrar_devolucao
+  usecase "Registrar Reserva" as registrar_reserva
+  usecase "Renovar Emprestimo" as renovar_emprestimo
+  usecase "Registrar Emprestimo" as registrar_emprestimo
+  usecase "Consultar Historico de Emprestimos" as historico_emprestimo
+  
+  usecase "Busca Avançada de Livros" as busca_avancada
+  usecase "Consultar Disponibilidade" as consultar_disponibilidade
+}
+
+bib -- cadastrar_obras
+bib -- editar_obras
+bib -- remover_obras
+
+bib -- cadastrar_exemplares
+bib -- editar_exemplares
+bib -- remover_exemplares
+
+bib -- associar_localizacao
+bib -- editar_localizacao
+associar_localizacao <.. cadastrar_localizacao:<<extend>>
+bib -- visualizar_mapa
+
+bib -- cadastrar_leitor
+bib -- editar_leitor
+bib -- bloquear_leitor
+
+bib -- realizar_emprestimo
+realizar_emprestimo ..> consultar_disponibilidade:<<include>>
+bib -- registrar_devolucao
+bib -- renovar_emprestimo
+bib -- historico_emprestimo
+
+
+bib -- historico_emprestimo
+bib -- busca_avancada
+
+@enduml

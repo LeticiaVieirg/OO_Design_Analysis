@@ -1,0 +1,54 @@
+@startuml
+hide footbox
+
+actor "Cliente" as cliente
+
+participant Carrinho as carrinho
+participant Produto as produto
+participant Cliente as cliente_entidade
+participant Pagamento as pagamento
+
+
+cliente -> carrinho: adicionarProduto()
+activate carrinho
+carrinho -> produto: obterProduto()
+activate produto
+produto --> carrinho
+deactivate produto
+carrinho --> cliente
+deactivate carrinho
+
+cliente -> carrinho: listarProdutos()
+activate carrinho
+carrinho --> cliente
+deactivate carrinho
+
+cliente -> carrinho: finalizarCompra()
+activate carrinho
+
+carrinho -> pagamento: finalizar()
+activate pagamento
+carrinho -> cliente_entidade: fornecerEndereco()
+activate cliente_entidade
+cliente_entidade --> carrinho
+deactivate cliente_entidade
+pagamento -> pagamento: calcularFrete()
+activate pagamento
+deactivate pagamento
+pagamento --> cliente: "Exibir Valor Total"
+deactivate pagamento
+
+cliente -> pagamento: pagarPix()
+activate pagamento
+pagamento -> pagamento: gerarQrCode()
+activate pagamento
+deactivate pagamento
+pagamento --> cliente
+pagamento -> pagamento: verificaPix()
+activate pagamento
+deactivate pagamento
+pagamento --> carrinho: "Compra Finalizada"
+deactivate pagamento
+carrinho --> cliente
+deactivate carrinho
+@enduml

@@ -1,0 +1,76 @@
+@startuml
+
+left to right direction
+
+class Cliente {
+  idCliente
+  nome
+  endereco
+}
+
+class Pedido {
+  idPedido
+  data
+  status
+}
+
+class ItemPedido {
+  quantidade
+  preco
+}
+
+class Produto {
+  idProduto
+  nome
+  preco
+}
+
+class Entrega {
+  idEntrega
+  status
+  dataEnvio
+  dataEntrega
+}
+
+class Transporte {
+  idTransporte
+  tipo
+}
+
+class Estoque {
+  quantidade
+}
+
+class Armazem {
+  idArmazem
+  localizacao
+}
+
+class Empresa {
+  idEmpresa
+  nome
+}
+
+class Motorista {
+  idMotorista
+  nome
+  cnh
+}
+
+
+Cliente "1" -- "1..*" Pedido
+
+Pedido "1" -- "1..*" ItemPedido
+Produto "1" -- "1..*" ItemPedido
+
+Pedido "1" -- "1" Entrega
+Entrega "1..*" -- "1" Transporte
+
+Produto "1..*" -- "1" Estoque
+Armazem  "1" o-- "1..*" Estoque
+
+Empresa "1" -- "1..*" Armazem
+
+Motorista "1" -- "1" Transporte
+
+@enduml
