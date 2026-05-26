@@ -1,0 +1,66 @@
+@startuml Questão 3: Interfaces - Sistema de Logging
+
+
+interface Logavel {
+    + log(mensagem: String): void
+}
+
+class LogEmArquivo {
+    - caminhoArquivo: String
+    
+    + log(mensagem: String): void
+    - abrirArquivo(): void
+    - escreverNoArquivo(texto: String): void
+    - fecharArquivo(): void
+}
+
+class LogEmBancoDeDados {
+    - conexaoBD: Connection
+    - tabelaLogs: String
+    
+    + log(mensagem: String): void
+    - conectarBD(): void
+    - inserirLogBD(mensagem: String): void
+    - desconectarBD(): void
+}
+
+class ServicoDeAplicacao {
+    - logger: Logavel
+    
+    + ServicoDeAplicacao(logger: Logavel)
+    + executarOperacao(operacao: String): void
+    + registrarErro(erro: String): void
+}
+
+Logavel <|.. LogEmArquivo
+Logavel <|.. LogEmBancoDeDados
+ServicoDeAplicacao --> Logavel
+
+note right of Logavel
+  **Interface:**
+  Define contrato
+  que deve ser
+  implementado.
+  
+  Notação: <<interface>>
+end note
+
+note right of ServicoDeAplicacao
+  **Dependência por Injeção:**
+  ServicoDeAplicacao depende
+  da interface Logavel,
+  não da implementação.
+  
+  Pode usar qualquer
+  implementação de Logavel.
+end note
+
+legend right
+  -- Realização (interface) --
+  Logavel <|.. LogEmArquivo
+  
+  -- Dependência --
+  ServicoDeAplicacao --> Logavel
+endlegend
+
+@enduml

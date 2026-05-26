@@ -1,0 +1,68 @@
+@startuml Questão 4: Associação e Navegabilidade
+
+
+class Professor {
+    - matricula: String
+    - nome: String
+    - especialidade: String
+    
+    + lecionar(disciplina: Disciplina): void
+    + obterDisciplinas(): List<Disciplina>
+}
+
+class Disciplina {
+    - codigo: String
+    - nome: String
+    - cargaHoraria: int
+    - professor: Professor
+    
+    + obterProfessor(): Professor
+    + alterarProfessor(novoProfessor: Professor): void
+}
+
+Professor "1" <-- "1..*" Disciplina
+
+note right of Disciplina
+  **Navegabilidade Unidirecional:**
+  A seta aponta de Disciplina
+  para Professor.
+  
+  Apenas Disciplina pode
+  acessar seu Professor.
+  Professor NÃO conhece
+  suas Disciplinas
+  diretamente (a menos que
+  implemente o método).
+end note
+
+note right of Professor
+  Multiplicidade: 1
+  Um professor leciona
+  muitas disciplinas.
+  
+  Mas sem navegabilidade
+  unidirecional, Professor
+  precisa manter sua própria
+  lista de Disciplinas.
+end note
+
+note left of Disciplina
+  Multiplicidade: 1..*
+  Uma disciplina é lecionada
+  por exatamente um professor.
+  
+  Navegabilidade: →
+  Pode acessar seu Professor.
+end note
+
+legend right
+  -- Associação Unidirecional --
+  Professor "1" <-- "1..*" Disciplina
+  (seta aponta para Professor)
+  
+  Disciplina pode navegar
+  até Professor, mas não
+  o contrário.
+endlegend
+
+@enduml

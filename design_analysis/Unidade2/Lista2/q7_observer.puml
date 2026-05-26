@@ -1,0 +1,79 @@
+@startuml Questão 7: Padrão Observer - Sistema de Leilão
+
+' ===== SUBJECT =====
+class ProdutoLeilao {
+    - codigo: String
+    - descricao: String
+    - precoAtual: double
+    - precoInicial: double
+    - dataTermino: Date
+    - interessados: List<Interessado>
+    
+    + adicionarInteressado(interessado: Interessado): void
+    + removerInteressado(interessado: Interessado): void
+    + atualizarPreco(novoPreco: double): void
+    - notificarInteressados(): void
+    + obterPrecoAtual(): double
+}
+
+' ===== OBSERVER INTERFACE =====
+interface Interessado {
+    + atualizar(novoPreco: double): void
+}
+
+' ===== CONCRETE OBSERVERS =====
+class Licitante {
+    - identificacao: String
+    - maiorOferta: double
+    - contatoEmail: String
+    
+    + atualizar(novoPreco: double): void
+    + fazerOferta(valor: double): void
+    - receberNotificacao(mensagem: String): void
+}
+
+class GerenciadorLeilao {
+    - nomeLeilao: String
+    - precoReserva: double
+    
+    + atualizar(novoPreco: double): void
+    - verificarPrecoReserva(preco: double): boolean
+    - registrarAlteracao(preco: double): void
+}
+
+class PlataformaMonitoramento {
+    - urlWebhook: String
+    - ultimaAtualizacao: Date
+    
+    + atualizar(novoPreco: double): void
+    - enviarDadosParaServidor(dados: String): void
+    - registrarEmLogs(mensagem: String): void
+}
+
+' ===== RELATIONSHIPS =====
+Interessado <|.. Licitante
+Interessado <|.. GerenciadorLeilao
+Interessado <|.. PlataformaMonitoramento
+
+ProdutoLeilao "1" --> "0..*" Interessado
+
+legend right
+  **Padrão Observer:**
+  
+  Define uma dependência um-para-muitos
+  onde quando um objeto muda de estado,
+  todos os seus dependentes são
+  notificados automaticamente.
+  
+  Vantagens:
+  - Acoplamento fraco
+  - Objeto Subject não precisa
+    conhecer detalhes dos Observers
+  - Fácil adicionar novos Observers
+  
+  Subject --> Observer (interface)
+  Observer <|.. ConcreteObserverA
+  Observer <|.. ConcreteObserverB
+endlegend
+
+@enduml

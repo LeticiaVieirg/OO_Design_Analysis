@@ -1,0 +1,133 @@
+@startuml Questão 8: Padrão Factory Method - Editor de Documentos
+
+' ===== PRODUCT INTERFACE =====
+interface Documento {
+    + abrir(): void
+    + salvar(): void
+    + fechar(): void
+    + editar(conteudo: String): void
+    + obterConteudo(): String
+}
+
+' ===== CONCRETE PRODUCTS =====
+class DocumentoDeTexto {
+    - conteudo: String
+    - formatacao: String
+    
+    + abrir(): void
+    + salvar(): void
+    + fechar(): void
+    + editar(conteudo: String): void
+    + obterConteudo(): String
+    + aplicarEstilo(estilo: String): void
+}
+
+class DocumentoDePlanilha {
+    - celulas: Map<String, String>
+    - formulas: Map<String, String>
+    
+    + abrir(): void
+    + salvar(): void
+    + fechar(): void
+    + editar(conteudo: String): void
+    + obterConteudo(): String
+    + calcularFormulas(): void
+    + adicionarCelula(linha: int, coluna: int, valor: String): void
+}
+
+class DocumentoDePresentacao {
+    - slides: List<Slide>
+    - temaAtual: String
+    
+    + abrir(): void
+    + salvar(): void
+    + fechar(): void
+    + editar(conteudo: String): void
+    + obterConteudo(): String
+    + adicionarSlide(): void
+    + aplicarTema(tema: String): void
+}
+
+' ===== CREATOR ABSTRACT CLASS =====
+abstract class Editor {
+    - documentoAtual: Documento
+    - caminhoArquivo: String
+    
+    {abstract} + criarDocumento(): Documento
+    + novo(): void
+    + abrir(caminho: String): void
+    + salvar(): void
+    + fechar(): void
+}
+
+' ===== CONCRETE CREATORS =====
+class EditorDeTexto {
+    - fonteAtual: String
+    - tamanhoFonte: int
+    
+    + criarDocumento(): Documento
+    + aplicarFontePersonalizada(fonte: String): void
+}
+
+class EditorDePlanilha {
+    - abas: List<String>
+    - linhasVisíveis: int
+    
+    + criarDocumento(): Documento
+    + adicionarAba(nome: String): void
+}
+
+class EditorDePresentacao {
+    - resolucao: String
+    - tempoSlide: int
+    
+    + criarDocumento(): Documento
+    + executarApresentacao(): void
+}
+
+' ===== RELATIONSHIPS =====
+Documento <|.. DocumentoDeTexto
+Documento <|.. DocumentoDePlanilha
+Documento <|.. DocumentoDePresentacao
+
+Editor <|-- EditorDeTexto
+Editor <|-- EditorDePlanilha
+Editor <|-- EditorDePresentacao
+
+EditorDeTexto ..|> DocumentoDeTexto : cria
+EditorDePlanilha ..|> DocumentoDePlanilha : cria
+EditorDePresentacao ..|> DocumentoDePresentacao : cria
+
+
+
+note bottom
+  **Fluxo de Uso:**
+  
+  Editor editor = new EditorDeTexto()
+  Documento doc = editor.criarDocumento()
+  doc.editar("Conteúdo...")
+  editor.salvar()
+  
+  A classe cliente não conhece
+  o tipo específico do documento.
+  Apenas trabalha com a interface.
+end note
+
+legend right
+  **Padrão Factory Method:**
+  
+  Define uma interface para criar
+  um objeto, mas deixa subclasses
+  decidirem qual classe instanciar.
+  
+  Vantagens:
+  - Acoplamento fraco
+  - Fácil adicionar novos tipos
+  - Centraliza lógica de criação
+  
+  Creator --> Product (interface)
+  Creator <|-- ConcreteCreatorA
+  ConcreteCreatorA ..|> ConcreteProductA
+endlegend
+
+@enduml

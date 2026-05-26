@@ -1,0 +1,92 @@
+@startuml Questão 6: Padrão Strategy - Compressão de Arquivos
+
+' ===== STRATEGY INTERFACE =====
+interface AlgoritmoDeCompressao {
+    + comprimir(dados: byte[]): byte[]
+    + descomprimir(dadosComprimidos: byte[]): byte[]
+}
+
+' ===== CONCRETE STRATEGIES =====
+class CompressaoZIP {
+    - nivelCompressao: int
+    
+    + comprimir(dados: byte[]): byte[]
+    + descomprimir(dadosComprimidos: byte[]): byte[]
+    - aplicarAlgoritmoZIP(dados: byte[]): byte[]
+}
+
+class CompressaoRAR {
+    - versaoRAR: String
+    
+    + comprimir(dados: byte[]): byte[]
+    + descomprimir(dadosComprimidos: byte[]): byte[]
+    - aplicarAlgoritmoRAR(dados: byte[]): byte[]
+}
+
+class CompressaoGZIP {
+    - bufferSize: int
+    
+    + comprimir(dados: byte[]): byte[]
+    + descomprimir(dadosComprimidos: byte[]): byte[]
+}
+
+' ===== CONTEXT =====
+class CompressorDeArquivos {
+    - algoritmo: AlgoritmoDeCompressao
+    - arquivoEntrada: String
+    - arquivoSaida: String
+    
+    + CompressorDeArquivos(algoritmo: AlgoritmoDeCompressao)
+    + setAlgoritmo(novoAlgoritmo: AlgoritmoDeCompressao): void
+    + comprimirArquivo(): boolean
+    + descomprimirArquivo(): boolean
+    - lerArquivo(caminho: String): byte[]
+    - escreverArquivo(caminho: String, dados: byte[]): void
+}
+
+' ===== RELATIONSHIPS =====
+AlgoritmoDeCompressao <|.. CompressaoZIP
+AlgoritmoDeCompressao <|.. CompressaoRAR
+AlgoritmoDeCompressao <|.. CompressaoGZIP
+
+CompressorDeArquivos --> AlgoritmoDeCompressao
+
+note right of CompressorDeArquivos
+  **CONTEXT:**
+  - Mantém referência para interface
+  - Usa algoritmo para processar
+  - Pode trocar algoritmo em runtime
+end note
+
+note right of AlgoritmoDeCompressao
+  STRATEGY (Interface):
+  - Define operações comuns
+  - Todas implementações seguem
+    o mesmo contrato
+end note
+
+note right of CompressaoZIP, CompressaoRAR
+  **CONCRETE STRATEGIES:**
+  - Implementam interface
+  - Cada uma com seu próprio
+    algoritmo de compressão
+  - Podem ser trocadas dinamicamente
+end note
+
+legend right
+  **Padrão Strategy:**
+  
+  Permite selecionar um algoritmo
+  em tempo de execução.
+  
+  Vantagens:
+  - Flexibilidade
+  - Fácil adicionar novos algoritmos
+  - Segregação de responsabilidades
+  
+  Context --> Strategy (interface)
+  Strategy <|.. ConcreteStrategyA
+  Strategy <|.. ConcreteStrategyB
+endlegend
+
+@enduml

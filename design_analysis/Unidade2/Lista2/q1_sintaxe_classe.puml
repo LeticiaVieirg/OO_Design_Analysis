@@ -1,0 +1,29 @@
+@startuml Questão 1: Sintaxe de Classe
+
+
+class Produto {
+    - codigo: int
+    - nome: String
+    # preco: double = 0.0
+    + emEstoque: boolean
+    
+    + getPreco(): double
+    + setPreco(novoPreco: double): void
+    - verificarDisponibilidade(): boolean
+}
+
+note right of Produto
+  **Legenda de Visibilidade:**
+  - (privado)
+  # (protegido)
+  + (público)
+  ~ (padrão/pacote)
+  
+  **Exemplo de Uso:**
+  p = new Produto()
+  p.setPreco(99.99)
+  preco = p.getPreco()
+  disponivel = p.emEstoque
+end note
+
+@enduml

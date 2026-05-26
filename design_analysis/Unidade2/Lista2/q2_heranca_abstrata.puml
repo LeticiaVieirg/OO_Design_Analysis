@@ -1,0 +1,54 @@
+@startuml Questão 2: Classe Abstrata e Herança
+
+abstract class Conta {
+    # saldo: double
+    
+    {abstract} + calcularTaxa(): double
+    + depositar(valor: double): void
+    + sacar(valor: double): boolean
+    + obterSaldo(): double
+}
+
+class ContaCorrente {
+    - limiteCheque: double
+    
+    + calcularTaxa(): double
+    + utilizarCheque(valor: double): boolean
+}
+
+class ContaPoupanca {
+    - taxaRendimento: double
+    - dataAniversario: Date
+    
+    + calcularTaxa(): double
+    + aplicarRendimento(): void
+}
+
+Conta <|-- ContaCorrente
+Conta <|-- ContaPoupanca
+
+note right of Conta
+  **Classe Abstrata:**
+  Não pode ser instanciada
+  diretamente. Serve como
+  template para subclasses.
+  
+  Método abstrato:
+  {abstract} calcularTaxa()
+end note
+
+note right of ContaCorrente
+  **Implementação:**
+  calcularTaxa() retorna
+  a taxa de manutenção
+  da conta corrente.
+end note
+
+note right of ContaPoupanca
+  **Implementação:**
+  calcularTaxa() retorna
+  a taxa de rendimento
+  da poupança.
+end note
+
+@enduml

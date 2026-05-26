@@ -1,0 +1,64 @@
+@startuml Questão 5: Agregação vs. Composição
+
+
+class Departamento {
+    - codigo: String
+    - nome: String
+    - localizacao: String
+    
+    + adicionarFuncionario(func: Funcionario): void
+    + removerFuncionario(func: Funcionario): void
+    + obterFuncionarios(): List<Funcionario>
+}
+
+class Funcionario {
+    - matricula: String
+    - nome: String
+    - salario: double
+    - departamento: Departamento
+    
+    + mudarDepartamento(novo: Departamento): void
+    + obterSalario(): double
+}
+
+Departamento "1" o-- "0..*" Funcionario
+
+' ===== COMPOSIÇÃO =====
+class Pedido {
+    - numeroPedido: String
+    - dataPedido: Date
+    - cliente: String
+    - itens: List<ItemDePedido>
+    
+    + adicionarItem(item: ItemDePedido): void
+    + removerItem(item: ItemDePedido): void
+    + obterItens(): List<ItemDePedido>
+    + calcularTotal(): double
+}
+
+class ItemDePedido {
+    - codigo: String
+    - quantidade: int
+    - precoUnitario: double
+    - subtotal: double
+    - pedido: Pedido
+    
+    + calcularSubtotal(): double
+    + obterPedido(): Pedido
+}
+
+Pedido "1" *-- "1..*" ItemDePedido
+
+legend right
+  -- AGREGAÇÃO --
+  Departamento o-- Funcionario
+  (losango vazio)
+  Relacionamento "tem um"
+  
+  -- COMPOSIÇÃO --
+  Pedido *-- ItemDePedido
+  (losango cheio)
+  Relacionamento "é composto de"
+endlegend
+
+@enduml
