@@ -1,0 +1,89 @@
+@startuml
+hide footbox
+title Questão 5: Remover Item do Carrinho (Destruição de Objeto)
+
+actor "Consumidor" as consumidor
+participant "PaginaDoCarrinho" as pagina
+participant "CarrinhoDeCompras" as carrinho
+participant "ItemDoCarrinho" as item
+
+autonumber
+
+consumidor -> pagina: 1: clicarRemover(idItem: String)
+activate pagina
+
+pagina -> pagina: 1.1: selecionarItem(idItem: String): ItemDoCarrinho
+activate pagina
+note right: Localiza o item na interface
+deactivate pagina
+
+pagina -> pagina: 1.2: pedirConfirmacao("Deseja remover este item?")
+activate pagina
+note right: Dialog de confirmação
+deactivate pagina
+
+consumidor --> pagina: 1.3: confirmarRemocao()
+activate pagina
+
+pagina -> carrinho: 1.4: removerItem(idItem: String): void
+activate carrinho
+
+carrinho -> carrinho: 1.4.1: localizarItem(idItem: String): ItemDoCarrinho
+activate carrinho
+note right: Busca o item na lista
+deactivate carrinho
+
+carrinho -> item: 1.4.2: destruir() <<destroy>>
+activate item
+note right: Elimina o objeto ItemDoCarrinho
+
+item -> item: 1.4.2.1: liberarRecursos()
+activate item
+note right: Limpa referências
+note right of item
+  Destruindo ItemDoCarrinho:
+  - Desaloca memória
+  - Remove listeners
+  - Finaliza transações
+end note
+deactivate item
+
+deactivate item
+note right: ✗ Objeto removido
+
+carrinho -> carrinho: 1.4.3: removerDaLista(item: ItemDoCarrinho)
+activate carrinho
+note right: Remove da coleção
+deactivate carrinho
+
+carrinho -> carrinho: 1.4.4: recalcularTotal()
+activate carrinho
+note right: Atualiza preço total
+deactivate carrinho
+
+carrinho --> pagina: 1.5: confirmacaoRemocao(novoTotal: Double)
+deactivate carrinho
+
+pagina -> pagina: 1.6: atualizarCarrinho()
+activate pagina
+note right: Atualiza UI
+deactivate pagina
+
+pagina --> consumidor: 2: exibirMensagemSucesso("Item removido do carrinho")
+note right: Toast de sucesso
+
+pagina -> pagina: 2.1: atualizarListaItens()
+activate pagina
+note right: Remove linha da tabela
+deactivate pagina
+
+pagina -> pagina: 2.2: atualizarContadorCarrinho(novoTotal: int)
+activate pagina
+note right: Decrementa badge
+deactivate pagina
+
+deactivate pagina
+
+note over consumidor, carrinho: Item destruído e removido com sucesso
+
+@enduml

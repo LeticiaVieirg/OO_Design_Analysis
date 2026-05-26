@@ -1,0 +1,66 @@
+@startuml
+hide footbox
+title Questão 4: Adicionar Item ao Carrinho (Criação de Objeto)
+
+actor "Consumidor" as consumidor
+participant "PaginaDeProduto" as pagina
+participant "CarrinhoDeCompras" as carrinho
+participant "ItemDoCarrinho" as item
+
+autonumber
+
+consumidor -> pagina: 1: clicarAdicionarAoCarrinho(produto: Produto, quantidade: int)
+activate pagina
+
+pagina -> pagina: 1.1: validarQuantidade(quantidade: int): Boolean
+activate pagina
+note right: Verifica se quantidade > 0
+deactivate pagina
+
+pagina -> carrinho: 1.2: adicionarItem(produto: Produto, quantidade: int): void
+activate carrinho
+
+carrinho -> item**: 1.2.1: <<create>> novoItemDoCarrinho(produto: Produto, quantidade: int)
+activate item
+note right: Cria novo objeto ItemDoCarrinho
+note right of item
+  ItemDoCarrinho {
+    idItem: String
+    produto: Produto
+    quantidade: int
+    preco: Double
+    dataAdicao: Date
+  }
+end note
+deactivate item
+
+carrinho -> carrinho: 1.2.2: validarEstoque(produto: Produto, quantidade: int): Boolean
+activate carrinho
+note right: Verifica disponibilidade
+deactivate carrinho
+
+carrinho -> carrinho: 1.2.3: adicionarALista(item: ItemDoCarrinho): void
+activate carrinho
+note right: Insere na lista de itens
+deactivate carrinho
+
+carrinho --> pagina: 1.3: confirmacaoAdicao(item: ItemDoCarrinho, mensagem: String)
+note right: Retorna confirmação
+deactivate carrinho
+
+pagina --> consumidor: 2: exibirMensagemSucesso("Produto adicionado ao carrinho!")
+note right: Toast/Notificação de sucesso
+
+pagina -> pagina: 2.1: atualizarContadorCarrinho(totalItens: int)
+activate pagina
+note right: Atualiza badge do carrinho
+deactivate pagina
+
+pagina --> consumidor: 2.2: mostrarBotaoVerCarrinho()
+note right: Ativa opção "Ver Carrinho"
+
+deactivate pagina
+
+note over consumidor, item: Item criado com sucesso no carrinho
+
+@enduml

@@ -1,0 +1,92 @@
+@startuml
+hide footbox
+title Questão 3: Login com Alternativa de Falha
+
+actor "Visitante" as visitante
+participant "TelaDeLogin" as tela
+participant "SistemaDeAutenticacao" as sistema
+participant "PaginaPrincipal" as pagina
+
+autonumber
+
+visitante -> tela: 1: inserirCredenciais(email: String, senha: String)
+activate tela
+
+tela -> tela: 1.1: validarFormatoEmail(email: String)
+activate tela
+note right: Valida formato básico
+deactivate tela
+
+tela -> sistema: 1.2: autenticar(email: String, senha: String): AuthResponse
+activate sistema
+
+sistema -> sistema: 1.2.1: buscarUsuario(email: String): Usuario
+activate sistema
+note right: Consulta BD
+deactivate sistema
+
+sistema -> sistema: 1.2.2: verificarSenha(senha: String): Boolean
+activate sistema
+note right: Compara hash
+deactivate sistema
+
+alt Credenciais Válidas
+    note over tela, pagina: CASO 1: LOGIN BEM-SUCEDIDO ✓
+    
+    sistema -> sistema: 1.2.3: gerarToken(usuario: Usuario): String
+    activate sistema
+    note right: Cria JWT ou sessão
+    deactivate sistema
+    
+    sistema --> tela: AuthResponse(sucesso, token)
+    deactivate sistema
+    
+    tela -> tela: 1.3: armazenarToken(token: String)
+    activate tela
+    note right: LocalStorage/SessionStorage
+    deactivate tela
+    
+    tela --> visitante: 2: mensagemSucesso("Login realizado com sucesso!")
+    note right: Mensagem positiva
+    
+    tela -> pagina: 3: redirecionar()
+    activate pagina
+    note right: Navega para home/dashboard
+    
+    pagina --> visitante: 4: exibirPaginaPrincipal(usuario: Usuario)
+    note right: Bem-vindo, [Nome]!
+    
+    deactivate pagina
+
+else Credenciais Inválidas
+    note over tela, sistema: CASO 2: LOGIN FALHOU ✗
+    
+    sistema -> sistema: 1.2.3: registrarTentativaFalha(email: String)
+    activate sistema
+    note right: Incrementa contador
+    deactivate sistema
+    
+    alt Tentativas < 3
+        sistema --> tela: AuthResponse(erro, motivo)
+        deactivate sistema
+        
+        tela --> visitante: 2: exibirMensagemErro("Email ou senha incorretos")
+        note right: Mensagem de erro
+        
+    else Tentativas >= 3
+        sistema -> sistema: 1.2.4: bloquearConta(email: String)
+        activate sistema
+        deactivate sistema
+        
+        sistema --> tela: AuthResponse(erro_bloqueado)
+        deactivate sistema
+        
+        tela --> visitante: 2: exibirMensagemErro("Conta bloqueada por segurança")
+        note right: Aguarde 30 minutos
+    end
+
+end
+
+note over visitante, pagina: Fim do processo de login
+
+@enduml

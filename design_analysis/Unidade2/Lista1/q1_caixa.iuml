@@ -1,0 +1,104 @@
+@startuml
+hide footbox
+
+actor "Cliente" as cliente
+
+participant "CaixaEletronico" as caixa
+participant "SistemaBanco" as banco
+participant "VerificadorSenha" as verificador
+participant "ProcessadorSaque" as processador
+participant "DispenserDinheiro" as dispenser
+
+cliente -> caixa: 1: inserirCartao(cartao: Cartao): void
+activate caixa
+
+caixa -> caixa: 1.1: lerCartao()
+activate caixa
+deactivate caixa
+
+caixa --> cliente: 2: solicitarSenha(): void
+
+cliente -> caixa: 3: inserirSenha(senha: String): void
+
+caixa -> verificador: 3.1: validarSenha(cartao: Cartao, senha: String): Boolean
+activate verificador
+
+verificador -> banco: 3.1.1: consultarDadosCartao(cartao: Cartao): DadosCartao
+activate banco
+banco --> verificador: dados
+deactivate banco
+
+verificador -> verificador: 3.1.2: compararSenha(senha: String, senhaCriptada: String)
+activate verificador
+deactivate verificador
+
+verificador --> caixa: true
+deactivate verificador
+
+caixa --> cliente: 4: exibirMenu(): void
+
+cliente -> caixa: 5: selecionarSaque(): void
+
+caixa --> cliente: 6: solicitarValor(): void
+
+cliente -> caixa: 7: inserirValor(valor: Double): void
+
+caixa -> processador: 7.1: validarSaque(cartao: Cartao, valor: Double): ResultadoValidacao
+activate processador
+
+processador -> banco: 7.1.1: consultarSaldo(cartao: Cartao): Double
+activate banco
+banco --> processador: saldo
+deactivate banco
+
+processador -> banco: 7.1.2: verificarLimite(cartao: Cartao): Double
+activate banco
+banco --> processador: limite
+deactivate banco
+
+processador -> processador: 7.1.3: validarValor(valor: Double, saldo: Double, limite: Double)
+activate processador
+deactivate processador
+
+processador --> caixa: resultadoOk
+deactivate processador
+
+caixa -> banco: 7.2: processarSaque(cartao: Cartao, valor: Double): Boolean
+activate banco
+
+banco -> banco: 7.2.1: debitarConta(cartao: Cartao, valor: Double)
+activate banco
+deactivate banco
+
+banco -> banco: 7.2.2: registrarTransacao(cartao: Cartao, valor: Double)
+activate banco
+deactivate banco
+
+banco --> caixa: true
+deactivate banco
+
+caixa -> dispenser: 8: dispensarDinheiro(valor: Double): void
+activate dispenser
+
+dispenser -> dispenser: 8.1: contagemNotas(valor: Double): List<Nota>
+activate dispenser
+deactivate dispenser
+
+dispenser -> dispenser: 8.2: entregarNotas(notas: List<Nota>): void
+activate dispenser
+deactivate dispenser
+
+dispenser --> caixa: notas entregues
+deactivate dispenser
+
+caixa --> cliente: 9: exibirMensagemSucesso(): void
+
+cliente -> caixa: 10: retirarDinheiro(): void
+
+caixa -> caixa: 11: ejetarCartao(): void
+activate caixa
+deactivate caixa
+
+caixa --> cliente: cartao ejetado
+
+@enduml
