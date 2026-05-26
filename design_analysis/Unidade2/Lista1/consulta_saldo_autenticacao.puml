@@ -1,0 +1,96 @@
+@startuml
+hide footbox
+title Diagrama de Sequência: Consulta de Saldo com Autenticação Opcional
+
+actor "Usuario" as usuario
+
+participant "AppBancario" as app
+participant "ServidorAutenticacao" as autenticacao
+participant "ServidorSaldo" as servidor
+collections "SessaoUsuario" as sessao
+
+autonumber
+
+usuario -> app: 1: consultarSaldo()
+activate app
+
+app -> app: 1.1: verificarAutenticacao()
+activate app
+deactivate app
+
+alt Usuario Autenticado
+    note over app, servidor: Caminho 1: Usuário já autenticado
+    
+    app -> sessao: 1.2: obterTokenSessao(): String
+    activate sessao
+    sessao --> app: token
+    deactivate sessao
+    
+    app -> servidor: 1.3: buscarSaldo(idUsuario: String, token: String): Double
+    activate servidor
+    
+    servidor -> servidor: 1.3.1: validarToken(token: String): Boolean
+    activate servidor
+    deactivate servidor
+    
+    servidor -> servidor: 1.3.2: consultarBancoDados(idUsuario: String): Double
+    activate servidor
+    note right: Acessa tabela de contas
+    deactivate servidor
+    
+    servidor --> app: saldo
+    deactivate servidor
+    
+    app --> usuario: 2: exibirSaldo(saldo: Double)
+    note right: Saldo exibido diretamente
+
+else Usuario Não Autenticado
+    note over app, autenticacao: Caminho 2: Usuário não autenticado
+    
+    app --> usuario: 2: solicitarAutenticacao()
+    note right: Exibe tela de login
+    
+    usuario -> app: 3: inserirCredenciais(cpf: String, senha: String)
+    
+    app -> autenticacao: 3.1: autenticar(cpf: String, senha: String): Boolean
+    activate autenticacao
+    
+    autenticacao -> autenticacao: 3.1.1: validarCredenciais(cpf: String, senha: String)
+    activate autenticacao
+    deactivate autenticacao
+    
+    autenticacao -> autenticacao: 3.1.2: criarSessao(idUsuario: String)
+    activate autenticacao
+    note right: Gera token de sessão
+    deactivate autenticacao
+    
+    autenticacao --> app: tokenSessao
+    deactivate autenticacao
+    
+    app -> sessao**: <<create>> novaSession(tokenSessao)
+    activate sessao
+    note right: Armazena sessão do usuário
+    deactivate sessao
+    
+    app -> servidor: 3.2: buscarSaldo(idUsuario: String, token: String): Double
+    activate servidor
+    
+    servidor -> servidor: 3.2.1: validarToken(token: String): Boolean
+    activate servidor
+    deactivate servidor
+    
+    servidor -> servidor: 3.2.2: consultarBancoDados(idUsuario: String): Double
+    activate servidor
+    deactivate servidor
+    
+    servidor --> app: saldo
+    deactivate servidor
+    
+    app --> usuario: 4: exibirSaldo(saldo: Double)
+    note right: Saldo exibido após autenticação
+
+end
+
+note over usuario, servidor: Transação concluída
+
+@enduml

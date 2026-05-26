@@ -1,0 +1,94 @@
+@startuml
+
+
+class GerenciadorPlano <<Boundary>> {
+  +criarPlano(usuario: Usuario)
+  +verificarAcesso(usuario: Usuario): boolean
+  +renovarPlano(usuario: Usuario)
+}
+
+class InterfaceApp <<Boundary>> {
+    +solicitarPlano()
+    +abrirMapa()
+    +acessarGaragem()
+}
+
+class InterfaceMapa <<Boundary>>{
+    +mostrarGaragens(lista: List<Garagem>)
+    +mostrarRota()
+}
+
+class GatewayPagamento <<Boundary>> {
+    +enviarCobranca(dados)
+    +consultarStatus(idTransacao)
+}
+
+class GerenciadorPagamento <<Control>> {
+  +realizarCobranca(usuario: Usuario, valor: double)
+  +confirmarCobranca(transacao: Transacao)
+}
+
+class GerenciadorRota <<Control>> {
+  +localizarGaragensProximas(posicao: GeoLocalizacao): List<Garagem>
+  +gerarRota(origem: GeoLocalizacao, destino: GeoLocalizacao)
+}
+
+class Usuario <<Entity>> {
+  - codigoUsuario: int
+  - nomeCompleto: String
+  - emailContato: String
+  - situacaoPlano: String
+  + ativarPlano()
+  + cancelarPlano()
+}
+
+class Transacao {
+  -codigoTransacao: int
+  -valorCobrado: double
+  -dataHora: Date
+  -estadoTransacao: String
+  +confirmarTransacao()
+  +cancelarTransacao()
+}
+
+class Garagem {
+  -codigoGaragem: int
+  -descricao: String
+  -posicao: GeoLocalizacao
+  -quantidadeVagasLivres: int
+  +verificarDisponibilidade()
+}
+
+class GeoLocalizacao {
+  -lat: double
+  -lng: double
+}
+
+class Plano <<Entity>> {
+    -codigoPlano: int
+    -inicioVigencia: Date
+    -fimVigencia: Date
+    -estadoPlano: String
+    +validarPlano()
+    +renovarPlano()
+}
+
+InterfaceApp --> GerenciadorPlano
+InterfaceApp --> GerenciadorPagamento
+InterfaceApp --> GerenciadorRota
+
+InterfaceMapa --> GerenciadorRota
+GerenciadorRota --> Garagem
+GerenciadorRota --> GeoLocalizacao
+Garagem "1"--"1" GeoLocalizacao
+
+GerenciadorPlano --> Usuario 
+GerenciadorPlano --> Plano
+
+GerenciadorPagamento --> transacao
+GerenciadorPagamento --> GatewayPagamento
+
+Usuario "1"--"1" Plano
+Usuario "1"--"*" Transacao 
+
+@enduml

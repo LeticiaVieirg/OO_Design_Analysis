@@ -1,0 +1,158 @@
+
+@startuml
+hide footbox
+title Diagrama de Sequência: Consulta de Saldo - Autenticação Opcional (Detalhado)
+
+actor "Usuario" as usuario
+participant "AppBancario" as app
+participant "GerenciadorSessao" as gerenciador
+participant "ServidorAutenticacao" as autenticacao
+participant "ServidorSaldo" as servidor
+participant "BancoDados" as bd
+collections "CacheToken" as cache
+
+autonumber
+
+usuario -> app: consultarSaldo()
+activate app
+
+app -> gerenciador: verificarSessaoAtiva(): Boolean
+activate gerenciador
+
+alt Sessão Válida e Ativa
+    note over app: CASO 1: Usuário Já Autenticado
+    
+    gerenciador -> cache: obterToken(idUsuario: String): Token
+    activate cache
+    cache --> gerenciador: token
+    deactivate cache
+    
+    gerenciador -> gerenciador: validarExpiracaoToken(token: Token): Boolean
+    note right: Verifica validade do token
+    
+    gerenciador --> app: token
+    deactivate gerenciador
+    
+    app -> servidor: 1.1: buscarSaldo(idUsuario: String, token: String): SaldoInfo
+    activate servidor
+    
+    servidor -> servidor: 1.1.1: validarToken(token: String): Boolean
+    activate servidor
+    note right: Criptografia e validação
+    deactivate servidor
+    
+    alt Token Válido
+        servidor -> bd: 1.1.2: consultarSaldo(idUsuario: String): Double
+        activate bd
+        note right: Query na tabela de contas
+        bd --> servidor: saldoAtual
+        deactivate bd
+        
+        servidor -> servidor: 1.1.3: criarResposta(saldoAtual: Double, moeda: String): SaldoInfo
+        activate servidor
+        deactivate servidor
+        
+        servidor --> app: SaldoInfo
+    else Token Expirado
+        servidor --> app: TokenExpiradoException
+        app --> usuario: 1.2: mensagemSessaoExpirada()
+        note right: Solicita reautenticação
+    end
+    
+    deactivate servidor
+    
+    app --> usuario: 2: exibirSaldo(saldoInfo: SaldoInfo)
+    note over usuario: Saldo: R$ X,XX
+    
+else Sessão Inválida ou Expirada
+    note over app: CASO 2: Usuário Não Autenticado
+    
+    gerenciador --> app: false
+    deactivate gerenciador
+    
+    app --> usuario: 3: exibirTelaLogin()
+    note right: Interface de autenticação
+    
+    usuario -> app: 4: submeterCredenciais(cpf: String, senha: String, lembrarSenha: Boolean)
+    activate app
+    
+    app -> app: 4.1: sanitizarEntrada(cpf: String, senha: String)
+    activate app
+    note right: Validação de entrada
+    deactivate app
+    
+    app -> autenticacao: 4.2: autenticar(cpf: String, senhaHash: String): AutenticacaoResponse
+    activate autenticacao
+    
+    autenticacao -> bd: 4.2.1: buscarUsuario(cpf: String): UsuarioInfo
+    activate bd
+    bd --> autenticacao: usuarioInfo
+    deactivate bd
+    
+    autenticacao -> autenticacao: 4.2.2: verificarSenha(senhaInserida: String, senhaArmazenada: String)
+    activate autenticacao
+    note right: Comparação segura (bcrypt/Argon2)
+    deactivate autenticacao
+    
+    alt Credenciais Válidas
+        autenticacao -> autenticacao: 4.2.3: criarToken(idUsuario: String, expiracao: Long): Token
+        activate autenticacao
+        note right: JWT ou SESSION token
+        deactivate autenticacao
+        
+        autenticacao -> cache: 4.2.4: armazenarToken(token: Token): void
+        activate cache
+        cache --> autenticacao: armazenado
+        deactivate cache
+        
+        autenticacao --> app: AutenticacaoResponse (sucesso, token)
+        
+    else Credenciais Inválidas
+        autenticacao -> bd: 4.2.5: registrarTentativaFalha(cpf: String): void
+        activate bd
+        deactivate bd
+        
+        autenticacao --> app: AutenticacaoResponse (erro)
+        app --> usuario: 5: exibirMensagemErro("Credenciais inválidas")
+        
+    end
+    
+    deactivate autenticacao
+    
+    alt Autenticação Bem-sucedida
+        app -> gerenciador: 4.3: criarSessao(usuarioInfo: UsuarioInfo, token: Token): void
+        activate gerenciador
+        note right: Armazena sessão local
+        
+        gerenciador -> cache: salvarSessao(idUsuario: String, token: Token): void
+        activate cache
+        cache --> gerenciador: salvo
+        deactivate cache
+        
+        gerenciador --> app: sessao criada
+        deactivate gerenciador
+        
+        app -> servidor: 4.4: buscarSaldo(idUsuario: String, token: String): SaldoInfo
+        activate servidor
+        
+        servidor -> servidor: 4.4.1: validarToken(token: String): Boolean
+        activate servidor
+        deactivate servidor
+        
+        servidor -> bd: 4.4.2: consultarSaldo(idUsuario: String): Double
+        activate bd
+        bd --> servidor: saldoAtual
+        deactivate bd
+        
+        servidor --> app: SaldoInfo
+        deactivate servidor
+        
+        app --> usuario: 6: exibirSaldo(saldoInfo: SaldoInfo)
+        note over usuario: Saldo: R$ X,XX\n(Novo acesso autenticado)
+    end
+
+end
+
+note over usuario, bd: Operação finalizada com sucesso
+
+@enduml

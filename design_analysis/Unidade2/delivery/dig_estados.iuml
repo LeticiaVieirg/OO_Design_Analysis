@@ -1,0 +1,26 @@
+@startuml "Estados Pedido"
+
+state c <<choice>>
+
+[*]-right->Solicitado
+Solicitado-->Aceito: Pedido Aceito(pedido)
+Solicitado-->Cancelado: Pedido Cancelado(pedido)
+Cancelado-->[*]
+Cancelado: entry / notificarCliente()
+
+Aceito-->c
+c-->EmPreparo: Iniciar Preparo[prox_pedido=pedido] 
+c-->Pendente: else
+
+Pendente-->EmPreparo: when (prox_pedido=pedido)
+Pendente-->Cancelado: Pedido Cancelado
+EmPreparo-->Pronto: Pedido Feito
+Pronto: entry/alocarEntegador()
+Pronto-->ACaminho: Pedido encaminhado
+ACaminho: do/calcularTempo()
+ACaminho-->Entregue: Pedido Entregue
+Entregue: do/avaliarPedido()
+Entregue-->[*]
+
+
+@enduml 

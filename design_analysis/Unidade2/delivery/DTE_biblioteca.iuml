@@ -1,0 +1,27 @@
+@startuml "Estados Livro"
+
+state c <<choice>>
+
+[*]-right->Cadastrado
+
+Cadastrado-->Disponivel: Livro Disponivel(livro)
+Cadastrado-->Indisponivel: Livro Indisponivel(livro)
+Indisponivel-->[*]
+Cancelado-->[*]
+
+Disponivel-->Solicitado
+Solicitado-->Aceito
+Solicitado-->Cancelado
+
+Aceito-->c
+c-->Emprestado: Livro Emprestado[livro_emprestado(livro)]
+Emprestado-->Devolvido
+c-->Pendente: else
+Pendente-->Cancelado: when
+
+Devolvido-->Disponivel
+Devolvido: do/ avaliarLivro()
+Devolvido-->[*]
+
+
+@enduml 

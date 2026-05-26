@@ -1,0 +1,29 @@
+@startuml "Finalizar Pedido"
+
+start
+:Identificar Pedido;
+if(Pedido Concluído?) then (sim)
+        :Consultar Pagamento;
+        if(Pagamento Realizado?) then (sim)
+            :Notificar Pagamento;
+            :Gerar Nota Fiscal;
+            :Solicitar Endereco;
+            if(Informar Endereco?) then (sim)
+                :Verificar Informacoes;
+            else (nao)
+                :Cancelar Pedido;
+            endif
+    
+        else (nao)
+            :Solicitar Pagamento;
+            :Aguardar;
+        endif
+
+else (nao)
+    repeat
+        :Aguardar Conclusao;
+endif
+    repeat while (Pedido Concluido?) is (nao) not (yes)
+
+stop
+@enduml
